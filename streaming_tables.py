@@ -4,38 +4,27 @@ import json
 ksql_server_url = "http://localhost:8088/ksql"
 
 ksql_command = """
-CREATE TABLE IF NOT EXISTS xes_model_test (
-    node_id VARCHAR PRIMARY KEY,
-    label VARCHAR,
-    parent VARCHAR,
-    children ARRAY<VARCHAR>
-) WITH (
-    KAFKA_TOPIC = 'test_xes_topic',
-    VALUE_FORMAT = 'JSON'
-);
-CREATE TABLE IF NOT EXISTS event_labels (
-    event VARCHAR PRIMARY KEY,
-    label VARCHAR
-) WITH (
-    KAFKA_TOPIC = 'test_label_topic',
-    VALUE_FORMAT = 'JSON'
-);
-CREATE STREAM IF NOT EXISTS raw_event_data (
-    event STRUCT<`concept:name` STRING, `time:timestamp` STRING>,
-    trace STRUCT<`concept:name` STRING>
-) WITH (
-    KAFKA_TOPIC = 'test_event_data',
-    VALUE_FORMAT = 'JSON'
-);
-CREATE STREAM IF NOT EXISTS event_data AS 
-SELECT 
-    event->`concept:name` AS activity, 
-    event->`time:timestamp` AS timestamp, 
-    trace->`concept:name` AS trace
-FROM 
-    raw_event_data 
+-- Define the state stream
+CREATE STREAM state_stream (id VARCHAR KEY, state_info VARCHAR)
+WITH (KAFKA_TOPIC='state_topic', VALUE_FORMAT='JSON');
+
+-- Define the event stream
+CREATE STREAM event_stream (id VARCHAR KEY, event_info VARCHAR)
+WITH (KAFKA_TOPIC='event_topic', VALUE_FORMAT='JSON');
+
+-- Create a table from the state stream
+CREATE TABLE state_table AS
+SELECT id, LATEST_BY_OFFSET(state_info) AS current_state
+FROM state_stream
+GROUP BY id
 EMIT CHANGES;
--- here i would need the logic of a table which keeps the last event type (A,B,C etc),last node id, the cost already and trace id
+
+-- Create a stream for processing updates
+INSERT INTO state_stream
+SELECT e.id as id, s.current_state+ e.event_info AS state_info
+FROM event_stream e
+LEFT JOIN state_table s ON e.id = s.id;
+
 """
 
 headers = {
