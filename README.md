@@ -1,4 +1,4 @@
-# Exploring SQL-based Near Real-Time Conformance Checking Using Stream Processing Engines
+# Exploring SQL-Based Near Real-Time Conformance Checking Using Stream Processing Engines
 
 Conformance checking is used to validate the accurate completion of business
  processes against an existing process model. Effective conformance checking using event
