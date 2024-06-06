@@ -12,4 +12,4 @@ Conformance checking is used to validate the accurate completion of business
 
  This repository includes two datasets: BPI_2012_1k_sample.xes from which the trie can be created and BPI_2012_Sim_2k_random_0.95.xes with which the suggested solutions can be tested. The file streaming_tables.py includes the code that was used for simple testing of a ksql solution. The Final Demo Notebook.ipynb includes the suggested solutions using Spark Structured Streaming with the additional code to generate dummy data.
 
-There are two additional notebooks- Dummy_Data_Notebook_ForEachBatch.ipynb where the output of using a dummy model and dummy data can be seen, additionally Scala_UDF_separate.html where the Needleman-Wunsch algorithm implementation can be seen in work separately.
+There are additional notebooks: Dummy_Data_Notebook_*.ipynb where the outputs of using a dummy model and dummy data can be seen, additionally Scala_UDF_separate.html where the Needleman-Wunsch algorithm implementation can be seen in work separately.
